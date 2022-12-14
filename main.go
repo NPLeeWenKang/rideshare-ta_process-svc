@@ -33,7 +33,7 @@ func main() {
 		for _, element := range trips {
 			err := assignTrips(element.Trip_Id)
 			if err != nil {
-				fmt.Println("Error assigning", element.Trip_Id)
+				fmt.Println("Error assigning trip_id", element.Trip_Id)
 			}
 		}
 		time.Sleep(8 * time.Second)
@@ -63,6 +63,6 @@ func getUnassignedTrips() ([]Trip, error) {
 func assignTrips(tripId int) error {
 	var err error
 
-	_, err = db.Query("INSERT INTO trip_assignment(trip_id, driver_id, status) WITH reject_assignment AS ( SELECT ta.driver_id FROM trip_assignment ta WHERE ta.status = 'rejected' AND ta.trip_id = ? ), random_available_driver AS ( SELECT * FROM driver d WHERE d.driver_id NOT IN (SELECT * FROM reject_assignment) ORDER BY RAND() LIMIT 1 ) SELECT ?, (SELECT driver_id FROM random_available_driver LIMIT 1), 'pending';", tripId, tripId)
+	_, err = db.Query("INSERT INTO trip_assignment(trip_id, driver_id, status) WITH reject_assignment AS ( SELECT ta.driver_id FROM trip_assignment ta WHERE ta.status = 'rejected' AND ta.trip_id = ? ), busy_drivers AS ( SELECT DISTINCT(ta.driver_id) FROM trip_assignment ta WHERE ta.status IN ('ACCEPTED','DRIVING','PENDING') ), random_available_driver AS ( SELECT * FROM driver d WHERE d.driver_id NOT IN (SELECT * FROM reject_assignment) AND d.driver_id NOT IN (SELECT * FROM busy_drivers) AND is_available = TRUE ORDER BY RAND() LIMIT 1 ) SELECT ?, (SELECT driver_id FROM random_available_driver LIMIT 1), ?;", tripId, tripId, TripStatus.PENDING)
 	return err
 }
