@@ -45,7 +45,7 @@ func getUnassignedTrips() ([]Trip, error) {
 	var rows *sql.Rows
 	var err error
 
-	rows, err = db.Query("WITH success_assignment AS ( SELECT ta.trip_id FROM trip_assignment ta WHERE ta.status IN ('riding', 'pending', 'accepted', 'riding', 'done') ) SELECT t.* FROM trip t WHERE t.trip_id NOT IN (SELECT * FROM success_assignment)")
+	rows, err = db.Query("WITH success_assignment AS ( SELECT ta.trip_id FROM trip_assignment ta WHERE ta.status IN ('DRIVING', 'PENDING', 'ACCEPTED', 'DONE') ) SELECT t.* FROM trip t WHERE t.trip_id NOT IN (SELECT * FROM success_assignment)")
 
 	if err != nil {
 		return nil, err
