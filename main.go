@@ -52,7 +52,7 @@ func getUnassignedTrips() ([]Trip, error) {
 	}
 	for rows.Next() {
 		var t Trip
-		if err := rows.Scan(&t.Trip_Id, &t.Passanger_Id, &t.Pick_Up, &t.Drop_Off, &t.Start, &t.End); err != nil {
+		if err := rows.Scan(&t.Trip_Id, &t.Passenger_Id, &t.Pick_Up, &t.Drop_Off, &t.Start, &t.End); err != nil {
 			return nil, err
 		}
 		tList = append(tList, t)
